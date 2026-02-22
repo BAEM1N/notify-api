@@ -1,5 +1,7 @@
 # Notify API
 
+[English](README.md) | [한국어](README_ko.md)
+
 A lightweight, self-hosted notification gateway for your infrastructure. Send alerts to Telegram and Email via a single REST API.
 
 Built for developers, DevOps teams, and **AI Agents** who need a simple way to send notifications from any service.
