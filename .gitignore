@@ -3,3 +3,4 @@ credentials/
 __pycache__/
 *.pyc
 .ruff_cache/
+firebase-debug.log

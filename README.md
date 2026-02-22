@@ -177,6 +177,44 @@ curl -X POST http://your-grafana:3000/api/v1/provisioning/contact-points \
   }'
 ```
 
+## MCP Server (for AI Agents)
+
+Notify API includes a built-in [MCP](https://modelcontextprotocol.io/) server, so AI agents (Claude Code, etc.) can send notifications directly via MCP protocol — no REST calls needed.
+
+### Setup
+
+```bash
+# Install dependencies (one-time)
+cd notify-api
+uv sync
+
+# Add to Claude Code (user scope)
+claude mcp add --transport stdio --scope user notify_mcp \
+  -e NOTIFY_API_URL=http://localhost:9009 \
+  -- uv run --directory /path/to/notify-api mcp_server.py
+```
+
+### Available MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `notify_health` | Check API health and channel availability |
+| `notify_send_telegram` | Send a Telegram notification |
+| `notify_send_email` | Send an Email notification |
+| `notify_send` | Send to one or multiple channels |
+
+### Claude Code Slash Command
+
+With the included skill, use `/notify` in Claude Code:
+
+```
+/notify 배포 완료
+/notify --critical 서버 다운! 즉시 확인 필요
+/notify --email Weekly Report: System uptime 99.97%
+/notify --all 점검 공지: 오늘 22시 서버 점검
+/notify --health
+```
+
 ## Usage Examples
 
 ### From a shell script
@@ -230,6 +268,7 @@ See [AGENTS.md](AGENTS.md) for structured integration instructions.
 - **aiosmtplib** — async SMTP client
 - **pydantic-settings** — env-based configuration
 - **Docker** — containerized deployment
+- **FastMCP** — MCP server for AI agent integration
 
 ## License
 
