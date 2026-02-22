@@ -18,6 +18,12 @@ Body: {"title":"str","message":"str","level":"info|warning|critical","source":"s
 POST /notify
 Body: {"channel":"telegram|email|all","title":"str","message":"str","level":"info|warning|critical","source":"str"}
 
+## MCP Server
+
+Tools: notify_health, notify_send_telegram, notify_send_email, notify_send
+Setup: uv run --directory /path/to/notify-api mcp_server.py (stdio transport)
+Env: NOTIFY_API_URL=http://<host>:9009
+
 ## Quick Use
 
 curl -X POST http://<host>:9009/notify/telegram -H "Content-Type: application/json" -d '{"title":"Alert","message":"Details here","level":"warning","source":"my-service"}'

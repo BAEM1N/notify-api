@@ -158,6 +158,37 @@ await fetch("http://<host>:9009/notify/telegram", {
 });
 ```
 
+## MCP Server (Recommended for AI Agents)
+
+If your agent supports [MCP](https://modelcontextprotocol.io/), use the built-in MCP server instead of REST calls. It provides the same functionality with native tool integration.
+
+### Setup
+
+```bash
+# Add to Claude Code
+claude mcp add --transport stdio --scope user notify_mcp \
+  -e NOTIFY_API_URL=http://<host>:9009 \
+  -- uv run --directory /path/to/notify-api mcp_server.py
+```
+
+### MCP Tools
+
+| Tool | Description | Annotations |
+|------|-------------|-------------|
+| `notify_health` | Check API health and channel status | readOnly |
+| `notify_send_telegram` | Send Telegram notification | openWorld |
+| `notify_send_email` | Send Email notification | openWorld |
+| `notify_send` | Unified send (channel: telegram/email/all) | openWorld |
+
+### MCP Usage Example
+
+```
+# In Claude Code or any MCP client:
+call notify_send_telegram(title="Task Complete", message="Pipeline finished", level="info", source="agent")
+```
+
+All MCP tools return JSON with the same schema as the REST API responses. Errors include actionable messages (e.g., "Telegram not configured. Set TELEGRAM_BOT_TOKEN...").
+
 ## Error Handling
 
 - `200` — Success
