@@ -1,0 +1,12 @@
+[project]
+name = "notify-api"
+version = "0.1.0"
+description = "Universal notification API for BaeumAI services"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "httpx>=0.28.0",
+    "aiosmtplib>=3.0.0",
+    "pydantic-settings>=2.7.0",
+]

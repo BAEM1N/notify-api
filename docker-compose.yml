@@ -1,0 +1,11 @@
+services:
+  notify-api:
+    build: ./app
+    container_name: notify-api
+    restart: unless-stopped
+    ports:
+      - "9009:9009"
+    env_file:
+      - .env
+    volumes:
+      - ./credentials:/app/credentials:ro
