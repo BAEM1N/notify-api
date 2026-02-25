@@ -6,6 +6,11 @@
 
 개발자, DevOps 팀, 그리고 **AI Agent**가 어떤 서비스에서든 간편하게 알림을 보낼 수 있도록 설계되었습니다.
 
+## 문서 링크
+
+- [프로젝트 구조](docs/STRUCTURE.md)
+- [에이전트 연동 가이드](AGENTS.md)
+
 ## 주요 기능
 
 - **Telegram** 알림 (Bot API)

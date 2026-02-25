@@ -6,6 +6,11 @@ A lightweight, self-hosted notification gateway for your infrastructure. Send al
 
 Built for developers, DevOps teams, and **AI Agents** who need a simple way to send notifications from any service.
 
+## Documentation
+
+- [Project Structure](docs/STRUCTURE.md)
+- [Agent Integration Guide](AGENTS.md)
+
 ## Features
 
 - **Telegram** notifications via Bot API

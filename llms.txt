@@ -41,4 +41,5 @@ Email sender routing:
 ## Docs
 
 - Full docs: https://github.com/BAEM1N/notify-api/blob/main/README.md
+- Structure: https://github.com/BAEM1N/notify-api/blob/main/docs/STRUCTURE.md
 - Agent guide: https://github.com/BAEM1N/notify-api/blob/main/AGENTS.md
