@@ -10,6 +10,7 @@ Built for developers, DevOps teams, and **AI Agents** who need a simple way to s
 
 - **Telegram** notifications via Bot API
 - **Email** notifications via SMTP (Gmail, etc.)
+- **Source-based sender routing** (e.g., `ddok.ai` vs `baeum.ai*`)
 - **Unified endpoint** — one API, multiple channels
 - **Severity levels** — info, warning, critical (with emoji indicators)
 - **Source tagging** — identify which service sent the alert
@@ -113,9 +114,12 @@ Content-Type: application/json
   "title": "Weekly Report",
   "message": "System uptime: 99.97%",
   "level": "info",
+  "source": "https://qna.ddok.ai",
   "to": "team@example.com"
 }
 ```
+
+`subject` is also accepted as a backward-compatible alias of `title`.
 
 ### Response Format
 
@@ -142,15 +146,37 @@ All endpoints return:
 
 ## Email Setup (Optional)
 
-For Gmail SMTP:
+For Gmail / Google Workspace SMTP:
 
 1. Enable [2-Step Verification](https://myaccount.google.com/security)
 2. Create an [App Password](https://myaccount.google.com/apppasswords)
-3. Add to `.env`:
+3. Add SMTP credentials to `.env`:
    ```env
-   SMTP_USER=your-email@gmail.com
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USER=your-default-email@gmail.com
    SMTP_PASSWORD=your-app-password
    ```
+4. (Optional) Configure brand/domain-based sender routing:
+   ```env
+   SMTP_FROM_BAEUM=no-reply@baeum.ai.kr
+   SMTP_FROM_NAME_BAEUM=배움 에이아이
+   SMTP_USER_BAEUM=no-reply@ddok.ai
+   SMTP_PASSWORD_BAEUM=your-app-password
+
+   SMTP_FROM_DDOK=no-reply@ddok.ai
+   SMTP_FROM_NAME_DDOK=주식회사 똑똑한청년들
+   SMTP_USER_DDOK=no-reply@ddok.ai
+   SMTP_PASSWORD_DDOK=your-app-password
+
+   SMTP_URL_KEYWORDS_BAEUM=baeum.ai.kr,baeum.io.kr,baeum.ai
+   SMTP_URL_KEYWORDS_DDOK=ddok.ai
+   ```
+
+Routing priority:
+- If `source` contains `ddok.ai` → ddok sender profile
+- If `source` contains `baeum.ai.kr`, `baeum.io.kr`, or `baeum.ai` → baeum sender profile
+- Otherwise → baeum sender profile (default)
 
 ## Grafana Integration
 
@@ -257,8 +283,18 @@ See [AGENTS.md](AGENTS.md) for structured integration instructions.
 | `TELEGRAM_CHAT_ID` | Yes | — | Telegram chat/group ID |
 | `SMTP_HOST` | No | `smtp.gmail.com` | SMTP server hostname |
 | `SMTP_PORT` | No | `587` | SMTP server port |
-| `SMTP_USER` | No | — | SMTP username (email) |
-| `SMTP_PASSWORD` | No | — | SMTP password / app password |
+| `SMTP_USER` | No | — | Shared fallback SMTP username |
+| `SMTP_PASSWORD` | No | — | Shared fallback SMTP password |
+| `SMTP_FROM_BAEUM` | No | `no-reply@baeum.ai.kr` | From email for baeum sender profile |
+| `SMTP_FROM_NAME_BAEUM` | No | `배움 에이아이` | From display name for baeum sender profile |
+| `SMTP_USER_BAEUM` | No | — | SMTP username for baeum sender profile |
+| `SMTP_PASSWORD_BAEUM` | No | — | SMTP password for baeum sender profile |
+| `SMTP_FROM_DDOK` | No | `no-reply@ddok.ai` | From email for ddok sender profile |
+| `SMTP_FROM_NAME_DDOK` | No | `주식회사 똑똑한청년들` | From display name for ddok sender profile |
+| `SMTP_USER_DDOK` | No | — | SMTP username for ddok sender profile |
+| `SMTP_PASSWORD_DDOK` | No | — | SMTP password for ddok sender profile |
+| `SMTP_URL_KEYWORDS_BAEUM` | No | `baeum.ai.kr,baeum.io.kr,baeum.ai` | Comma-separated source keywords for baeum routing |
+| `SMTP_URL_KEYWORDS_DDOK` | No | `ddok.ai` | Comma-separated source keywords for ddok routing |
 | `GMAIL_CREDENTIALS_PATH` | No | `/app/credentials/credentials.json` | Gmail API credentials file |
 
 ## Tech Stack

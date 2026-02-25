@@ -13,7 +13,7 @@ Body: {"title":"str","message":"str","level":"info|warning|critical","source":"s
 Response: {"ok":bool,"channels":{"telegram":bool},"errors":{}}
 
 POST /notify/email
-Body: {"title":"str","message":"str","level":"info|warning|critical","source":"str","to":"str"}
+Body: {"title":"str","subject":"str (alias)","message":"str","level":"info|warning|critical","source":"str","to":"str"}
 
 POST /notify
 Body: {"channel":"telegram|email|all","title":"str","message":"str","level":"info|warning|critical","source":"str"}
@@ -33,6 +33,10 @@ curl -X POST http://<host>:9009/notify/telegram -H "Content-Type: application/js
 git clone https://github.com/BAEM1N/notify-api.git && cd notify-api
 cp .env.example .env  # add TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID
 docker compose up -d
+
+Email sender routing:
+- source contains ddok.ai → ddok sender profile
+- source contains baeum.ai.kr/baeum.io.kr/baeum.ai → baeum sender profile
 
 ## Docs
 

@@ -1,4 +1,5 @@
 import email.message
+from email.utils import formataddr
 
 import aiosmtplib
 
@@ -12,12 +13,14 @@ def _build_email(
     level: Level,
     source: str,
     to: str,
+    from_email: str,
+    from_name: str,
 ) -> email.message.EmailMessage:
     emoji = LEVEL_EMOJI.get(level, "")
     msg = email.message.EmailMessage()
     msg["Subject"] = f"{emoji} {title}"
-    msg["From"] = settings.smtp_user
-    msg["To"] = to or settings.smtp_user
+    msg["From"] = formataddr((from_name, from_email))
+    msg["To"] = to or from_email
 
     body_parts = []
     if source:
@@ -35,15 +38,24 @@ async def send_email(
     to: str = "",
 ) -> bool:
     if not settings.email_enabled:
-        raise RuntimeError("Email not configured (SMTP_USER/SMTP_PASSWORD empty)")
+        raise RuntimeError("Email not configured (SMTP credentials empty)")
 
-    msg = _build_email(title, message, level, source, to)
+    profile = settings.resolve_email_profile(source)
+    msg = _build_email(
+        title=title,
+        message=message,
+        level=level,
+        source=source,
+        to=to,
+        from_email=profile.from_email,
+        from_name=profile.from_name,
+    )
     await aiosmtplib.send(
         msg,
         hostname=settings.smtp_host,
         port=settings.smtp_port,
-        username=settings.smtp_user,
-        password=settings.smtp_password,
+        username=profile.smtp_user,
+        password=profile.smtp_password,
         start_tls=True,
     )
     return True

@@ -56,12 +56,18 @@ Send an email. Requires SMTP to be configured on the server.
 ```json
 {
   "title": "string (required, max 200)",
+  "subject": "string (optional, alias of title for legacy clients)",
   "message": "string (required, max 4000)",
   "level": "info | warning | critical (optional, default: info)",
   "source": "string (optional)",
   "to": "string (optional, recipient email)"
 }
 ```
+
+Email sender profile is auto-selected from `source` keywords:
+- `ddok.ai` → ddok sender profile
+- `baeum.ai.kr`, `baeum.io.kr`, `baeum.ai` → baeum sender profile
+- no match → baeum sender profile (default)
 
 ### POST /notify
 

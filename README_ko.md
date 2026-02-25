@@ -10,6 +10,7 @@
 
 - **Telegram** 알림 (Bot API)
 - **Email** 알림 (SMTP / Gmail)
+- **Source 기반 발신자 라우팅** (`ddok.ai` vs `baeum.ai*`)
 - **통합 엔드포인트** — 하나의 API로 여러 채널 발송
 - **심각도 레벨** — info, warning, critical (이모지 표시)
 - **출처 태깅** — 어떤 서비스가 알림을 보냈는지 식별
@@ -113,9 +114,12 @@ Content-Type: application/json
   "title": "주간 리포트",
   "message": "시스템 가동률: 99.97%",
   "level": "info",
+  "source": "https://qna.ddok.ai",
   "to": "team@example.com"
 }
 ```
+
+하위 호환을 위해 `title` 대신 `subject` 필드도 허용합니다.
 
 ### 응답 형식
 
@@ -142,15 +146,37 @@ Content-Type: application/json
 
 ## Email 설정 (선택)
 
-Gmail SMTP 사용 시:
+Gmail / Google Workspace SMTP 사용 시:
 
 1. [2단계 인증](https://myaccount.google.com/security) 활성화
 2. [앱 비밀번호](https://myaccount.google.com/apppasswords) 생성
-3. `.env`에 추가:
+3. SMTP 기본 설정을 `.env`에 추가:
    ```env
-   SMTP_USER=your-email@gmail.com
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USER=your-default-email@gmail.com
    SMTP_PASSWORD=your-app-password
    ```
+4. (선택) 브랜드/도메인별 발신자 라우팅 설정:
+   ```env
+   SMTP_FROM_BAEUM=no-reply@baeum.ai.kr
+   SMTP_FROM_NAME_BAEUM=배움 에이아이
+   SMTP_USER_BAEUM=no-reply@ddok.ai
+   SMTP_PASSWORD_BAEUM=your-app-password
+
+   SMTP_FROM_DDOK=no-reply@ddok.ai
+   SMTP_FROM_NAME_DDOK=주식회사 똑똑한청년들
+   SMTP_USER_DDOK=no-reply@ddok.ai
+   SMTP_PASSWORD_DDOK=your-app-password
+
+   SMTP_URL_KEYWORDS_BAEUM=baeum.ai.kr,baeum.io.kr,baeum.ai
+   SMTP_URL_KEYWORDS_DDOK=ddok.ai
+   ```
+
+라우팅 우선순위:
+- `source`에 `ddok.ai` 포함 → ddok 발신자 프로필
+- `source`에 `baeum.ai.kr`, `baeum.io.kr`, `baeum.ai` 포함 → baeum 발신자 프로필
+- 그 외 → 기본값으로 baeum 발신자 프로필
 
 ## Grafana 연동
 
@@ -257,8 +283,18 @@ notify("학습 완료", "모델 정확도: 94.2%", "info", "ml-pipeline")
 | `TELEGRAM_CHAT_ID` | 예 | — | Telegram 채팅/그룹 ID |
 | `SMTP_HOST` | 아니오 | `smtp.gmail.com` | SMTP 서버 호스트 |
 | `SMTP_PORT` | 아니오 | `587` | SMTP 서버 포트 |
-| `SMTP_USER` | 아니오 | — | SMTP 사용자 (이메일) |
-| `SMTP_PASSWORD` | 아니오 | — | SMTP 비밀번호 / 앱 비밀번호 |
+| `SMTP_USER` | 아니오 | — | 공통 fallback SMTP 사용자 |
+| `SMTP_PASSWORD` | 아니오 | — | 공통 fallback SMTP 비밀번호 |
+| `SMTP_FROM_BAEUM` | 아니오 | `no-reply@baeum.ai.kr` | baeum 발신자 이메일 주소 |
+| `SMTP_FROM_NAME_BAEUM` | 아니오 | `배움 에이아이` | baeum 발신자 표시 이름 |
+| `SMTP_USER_BAEUM` | 아니오 | — | baeum 발신자 SMTP 사용자 |
+| `SMTP_PASSWORD_BAEUM` | 아니오 | — | baeum 발신자 SMTP 비밀번호 |
+| `SMTP_FROM_DDOK` | 아니오 | `no-reply@ddok.ai` | ddok 발신자 이메일 주소 |
+| `SMTP_FROM_NAME_DDOK` | 아니오 | `주식회사 똑똑한청년들` | ddok 발신자 표시 이름 |
+| `SMTP_USER_DDOK` | 아니오 | — | ddok 발신자 SMTP 사용자 |
+| `SMTP_PASSWORD_DDOK` | 아니오 | — | ddok 발신자 SMTP 비밀번호 |
+| `SMTP_URL_KEYWORDS_BAEUM` | 아니오 | `baeum.ai.kr,baeum.io.kr,baeum.ai` | baeum 라우팅 키워드(콤마 구분) |
+| `SMTP_URL_KEYWORDS_DDOK` | 아니오 | `ddok.ai` | ddok 라우팅 키워드(콤마 구분) |
 | `GMAIL_CREDENTIALS_PATH` | 아니오 | `/app/credentials/credentials.json` | Gmail API 인증 파일 경로 |
 
 ## 기술 스택
